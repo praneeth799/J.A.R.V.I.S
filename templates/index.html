@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="ember"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>J.A.R.V.I.S</title>
+<style>
+:root{--bg:#050200;--bg2:#2b1303;--ac:#ff7a00;--ac2:#ffb347;--on:#1a0a00;--gl:rgba(26,12,3,.8);--ln:rgba(255,122,0,.28);--tx:#fff1e3;--mu:#bb9d84;--ok:#6dffb0;--er:#ff6b6b;--cw:360px}
+[data-theme=arc]{--bg:#030b14;--bg2:#0a2236;--ac:#3dd9ff;--ac2:#8cf0ff;--on:#001018;--gl:rgba(8,28,46,.78);--ln:rgba(61,217,255,.24);--tx:#e4f6ff;--mu:#7fa3b8}
+[data-theme=stark]{--bg:#0e0508;--bg2:#2a0a12;--ac:#ff4d5e;--ac2:#ffc65a;--on:#1a0004;--gl:rgba(36,8,16,.78);--ln:rgba(255,77,94,.26);--tx:#fff0e8;--mu:#b88d8d}
+[data-theme=aurora]{--bg:#060816;--bg2:#1a1240;--ac:#9a86ff;--ac2:#35f0b5;--on:#07041a;--gl:rgba(22,15,56,.78);--ln:rgba(154,134,255,.28);--tx:#eeeaff;--mu:#9a95c4}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{color:var(--tx);font:16px/1.5 "Segoe UI","Noto Sans Telugu","Noto Sans Devanagari",system-ui,sans-serif;overflow:hidden;display:flex;flex-direction:column;
+ background:linear-gradient(var(--ln) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,var(--ln) 1px,transparent 1px) 0 0/48px 48px,radial-gradient(circle at 50% 46%,var(--bg2),var(--bg) 70%);background-blend-mode:soft-light,soft-light,normal}
+body.cwide{--cw:540px}
+body.cmin{--cw:56px}
+.glass{background:var(--gl);backdrop-filter:blur(14px);border:1px solid var(--ln);border-radius:18px}
+#title{flex:none;text-align:center;padding-top:12px;font:600 24px "Bahnschrift","Segoe UI",sans-serif;letter-spacing:.34em;text-indent:.34em;color:var(--ac2);text-shadow:0 0 18px var(--ac);line-height:1.2}
+#title small{display:block;font:12px "Segoe UI";letter-spacing:.12em;color:var(--mu);text-shadow:none}
+#stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;padding:0 20px;gap:4px}
+#coreWrap{flex:1;min-height:0;width:100%;container-type:size;display:grid;place-items:center}
+#orb{border:0;background:none;padding:0;cursor:pointer;border-radius:50%;width:min(100cqh,100cqw);aspect-ratio:1}
+#cv{width:100%;height:100%;display:block}
+#status{flex:none;font-size:17px;color:var(--ac2);text-align:center;line-height:1.3}
+#meter{flex:none;width:min(260px,50vw);height:4px;background:var(--ln);border-radius:4px;overflow:hidden}#lvl{height:100%;background:var(--ac);transform-origin:left;transform:scaleX(0);transition:transform .08s}
+#heard{flex:none;font-size:13px;color:var(--mu);text-align:center;max-width:min(560px,max(280px,calc(100vw - 2*var(--cw) - 60px)));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:20px}
+#cap{flex:none;max-width:min(640px,max(280px,calc(100vw - 2*var(--cw) - 60px)));text-align:center;font-size:16px;line-height:1.4;max-height:4.2em;overflow:auto}
+#capacts{flex:none}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;justify-content:center}.acts span{font-size:13px;padding:3px 10px;border-radius:20px;border:1px solid var(--ok);color:var(--ok)}.acts span.bad{border-color:var(--er);color:var(--er)}
+select,input,button.b{background:rgba(0,0,0,.4);color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:8px 12px;font:inherit}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+button.b{cursor:pointer;transition:.15s}button.b:hover{border-color:var(--ac);color:var(--ac2)}
+button.b.on{background:var(--ac);color:var(--on);border-color:var(--ac);font-weight:600}
+#dock{flex:none;padding:8px 20px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;width:min(720px,max(300px,calc(100vw - 2*var(--cw) - 40px)));margin:0 auto}
+.chips{display:flex;gap:8px;width:100%;overflow-x:auto;justify-content:safe center;padding-bottom:2px;scrollbar-width:thin}.chips button{flex:none;background:none;color:var(--mu);border:1px solid var(--ln);border-radius:20px;padding:3px 12px;cursor:pointer;font:inherit;font-size:13px;white-space:nowrap}.chips button:hover{color:var(--ac2);border-color:var(--ac)}
+form{display:flex;gap:8px;width:100%}form input{flex:1;min-width:0}#talk{flex:none;white-space:nowrap}
+button.go{background:var(--ac);color:var(--on);border:0;border-radius:10px;padding:0 22px;font-weight:700;cursor:pointer}
+#gear{position:fixed;top:14px;left:14px;z-index:5;width:46px;height:46px;padding:0;text-align:center;font-size:20px}
+#drawer{position:fixed;top:14px;left:14px;bottom:14px;width:320px;z-index:4;padding:70px 18px 18px;overflow:auto;display:flex;flex-direction:column;gap:12px;transform:translateX(-120%);transition:transform .3s}
+body.dopen #drawer{transform:none}
+h3{margin:6px 0 0;font-size:14px;color:var(--ac2);font-weight:600}
+label{font-size:13px;color:var(--mu);display:flex;flex-direction:column;gap:4px}input[type=range]{padding:0;accent-color:var(--ac)}
+.tg{display:flex;gap:8px}.tg .b{flex:1;text-align:center;padding:9px 6px;font-size:14px}
+.themes{display:flex;gap:10px;align-items:center;color:var(--mu);font-size:13px}.themes button{width:26px;height:26px;border-radius:50%;border:2px solid var(--ln);cursor:pointer;padding:0}.themes button.sel{border-color:#fff}
+#mem{font-size:13px;color:var(--mu);border-top:1px solid var(--ln);padding-top:12px}#mem ul{padding-left:18px;margin:6px 0}#mem li{color:var(--tx)}
+#chat{position:fixed;top:14px;right:14px;bottom:14px;width:var(--cw);z-index:3;display:flex;flex-direction:column;overflow:hidden;transition:width .3s}
+#chat header{flex:none;display:flex;align-items:center;justify-content:space-between;padding:10px 12px 10px 16px;border-bottom:1px solid var(--ln);color:var(--ac2);font-size:14px}
+#cmin{position:relative;width:34px;height:34px;padding:0;text-align:center}
+#badge{position:absolute;top:-7px;right:-7px;background:var(--ac);color:var(--on);font-size:11px;font-weight:700;border-radius:10px;padding:0 6px;display:none;font-style:normal}
+#voice{flex:none;padding:10px 14px;border-bottom:1px solid var(--ln);display:flex;flex-direction:column;gap:8px;font-size:13px}
+#voice .r{display:flex;gap:8px;align-items:center}#voice .r>span{color:var(--ac2);min-width:44px}#voice select{flex:1;min-width:0;padding:6px 8px;font-size:13px}#voice .b{padding:6px 12px;font-size:13px}
+#voice .sl{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:8px;color:var(--mu)}
+#voice details summary{cursor:pointer;color:var(--mu)}#voice details label{margin-top:6px}
+body.cmin #chat header span,body.cmin #log,body.cmin #voice{display:none}body.cmin #chat header{justify-content:center;padding:10px 0;border:0}
+#log{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.msg{padding:10px 14px;border-radius:14px;border:1px solid var(--ln);font-size:14px}
+.me{align-self:flex-end;border-color:var(--ac);background:rgba(0,0,0,.25)}
+.ai{border-left:3px solid var(--ac)}.ai .row{display:flex;gap:10px;margin:2px 0}.ai .tag{color:var(--ac);font-weight:700;min-width:26px}
+.err{color:var(--er)}.hint{margin:auto;text-align:center;color:var(--mu);font-size:13px}.hint b{color:var(--ac2)}
+@media(max-width:900px){#dock,#heard,#cap{width:auto;max-width:94vw}}
+.md{line-height:1.55}.md h4{font-size:15px;color:var(--ac2);margin:10px 0 4px}.md p{margin:6px 0}.md ul{padding-left:20px;margin:4px 0}.md code{background:rgba(0,0,0,.45);padding:1px 5px;border-radius:5px}.md pre{background:rgba(0,0,0,.5);padding:10px;border-radius:8px;overflow:auto;font-size:12px;white-space:pre-wrap}
+details.why{margin-top:8px;font-size:13px;color:var(--mu)}details.why summary{cursor:pointer}details.why>div{margin-top:4px}
+.appcard,.pend{margin-top:10px;padding:10px 12px;border:1px solid var(--ac);border-radius:12px;background:rgba(0,0,0,.25);font-size:13px;word-break:break-all}.pend{border-color:var(--er)}.acts button.b{padding:5px 12px;font-size:13px}
+#wbtn{position:fixed;top:14px;left:68px;z-index:5;height:46px;padding:0 14px}
+#bench{position:fixed;top:14px;bottom:14px;left:14px;right:calc(var(--cw) + 28px);z-index:6;display:flex;flex-direction:column;overflow:hidden}#bench[hidden]{display:none}
+#bench header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--ln)}#bench header .b{padding:5px 10px;font-size:13px}#bench header div{display:flex;gap:6px;flex-wrap:wrap}
+#bbody{flex:1;min-height:0;display:flex}#bframe{flex:1;border:0;background:#fff;width:100%}#bcode{flex:1;margin:0;padding:14px;overflow:auto;font-size:12px;white-space:pre-wrap;word-break:break-all}#blist{flex:1;padding:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;overflow:auto}
+#cwide{width:34px;height:34px;padding:0;text-align:center}.hd{display:flex;gap:6px}
+</style></head>
+<body>
+<div id="title">JARVIS<small>Just A Rather Very Intelligent System</small></div>
+<button class="b glass" id="gear" aria-label="Settings">⚙</button>
+<button class="b glass" id="wbtn" title="Apps Jarvis has built">🛠 Apps</button>
+
+<div id="stage">
+  <div id="coreWrap"><button id="orb" aria-label="Start or stop listening"><canvas id="cv"></canvas></button></div>
+  <div id="status">Tap the core to start listening</div>
+  <div id="meter" title="Microphone level"><div id="lvl"></div></div>
+  <div id="heard"></div>
+  <div id="cap"></div><div class="acts" id="capacts"></div>
+</div>
+
+<div id="dock"><div class="chips" id="chips"></div>
+  <form id="f"><button type="button" class="b" id="talk">🎤 Speak now</button><input id="q" placeholder="Ask Jarvis or give a command…" autocomplete="off"><button class="go">Send</button></form></div>
+
+<aside id="drawer" class="glass">
+  <h3>Settings</h3>
+  <label>Listening language
+    <select id="rlang"><option value="en-IN">English</option><option value="hi-IN">हिन्दी</option><option value="te-IN">తెలుగు</option></select></label>
+  <div class="tg"><button class="b on" id="ctl">PC control: on</button><button class="b on" id="mute">Voice: on</button></div>
+  <button class="b" id="conf">Confirm every action</button>
+  <small style="color:var(--mu)">Sensitive actions (close app, lock, typing, sending WhatsApp text) always ask first.</small>
+  <h3>Theme</h3>
+  <div class="themes">
+    <button data-t="ember" style="background:#ff7a00" title="Orange"></button><button data-t="arc" style="background:#3dd9ff" title="Arc blue"></button>
+    <button data-t="stark" style="background:#ff4d5e" title="Stark red"></button><button data-t="aurora" style="background:#9a86ff" title="Aurora"></button></div>
+  <div id="mem"><div>Saved memory <span id="mc"></span></div><ul id="ml"></ul><button class="b" id="wipe">Erase all memory</button></div>
+</aside>
+
+<div id="bench" class="glass" hidden>
+  <header><span><b id="bname">Workshop</b> <small id="bkind" style="color:var(--mu)"></small></span>
+    <div><button class="b" data-tab="prev">Preview</button><button class="b" data-tab="code">Code</button><button class="b" id="bopen">Open in browser</button><button class="b" id="bfold">Open folder</button><button class="b" id="bcopy">Copy code</button><button class="b" id="bclose">✕</button></div></header>
+  <div id="bbody"><iframe id="bframe" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-downloads" hidden></iframe><pre id="bcode" hidden></pre><div id="blist" hidden></div></div>
+</div>
+<section id="chat" class="glass">
+  <header><span>Conversation</span><div class="hd"><button class="b glass" id="cwide" title="Wider chat">⤢</button><button class="b glass" id="cmin" title="Minimize / expand chat">›<i id="badge"></i></button></div></header>
+  <div id="voice">
+    <div class="r"><span>Voice</span>
+      <select id="gender"><option value="auto">Auto</option><option value="male">Male</option><option value="female">Female</option></select>
+      <button class="b" id="testv">Test</button></div>
+    <div class="r"><span>Reply</span>
+      <select id="slang"><option value="en">English</option><option value="hi">हिन्दी</option><option value="te">తెలుగు</option><option value="all">All three</option></select></div>
+    <div class="r"><span>Read</span><select id="readmode"><option value="brief">Short answer</option><option value="full">Full answer</option></select></div>
+    <label class="sl">Speed <input type="range" id="rate" min=".6" max="1.4" step=".05" value="1"></label>
+    <label class="sl">Pitch <input type="range" id="pitch" min=".5" max="1.5" step=".05" value=".95"></label>
+    <details><summary>Choose a specific voice</summary>
+      <label>English <select id="v-en"></select></label><label>Hindi <select id="v-hi"></select></label><label>Telugu <select id="v-te"></select></label></details>
+  </div>
+  <div id="log"><div class="hint" id="hint">Say <b>“Jarvis”</b>, then a command in English, हिन्दी or తెలుగు.<br>Say <b>“Jarvis, remember …”</b> to save something. Nothing else is stored.</div></div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+const WAKE=/(jarvis|jarvish|jarwis|jarves|jarvice|travis|jervis|जार्विस|जार्विश|जर्विस|जारविस|జార్విస్|జర్విస్|జార్వీస్)/i;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let history=[],rec=null,want=false,running=false,armed=false,armTimer,busy=false,speaking=false,voiceOn=true,control=true,ms,ac,raf,an=null,fd=new Uint8Array(128),td=new Uint8Array(512),unread=0;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function state(c,t){document.body.dataset.m=c||"";$("status").textContent=t}
+function add(cls,html){$("hint")?.remove();const d=document.createElement("div");d.className="msg "+cls;d.innerHTML=html;$("log").append(d);$("log").scrollTop=1e9;
+  if(cls.startsWith("ai")&&document.body.classList.contains("cmin")){unread++;$("badge").textContent=unread;$("badge").style.display="block"}return d}
+
+/* ---------- panels ---------- */
+$("gear").onclick=()=>document.body.classList.toggle("dopen");
+$("cmin").onclick=()=>{document.body.classList.toggle("cmin");if(!document.body.classList.contains("cmin")){unread=0;$("badge").style.display="none"}};
+if(innerWidth<900)document.body.classList.add("cmin");
+
+/* ---------- preferences (only UI settings, never your questions) ---------- */
+const PK=["readmode","gender","rate","pitch","v-en","v-hi","v-te","slang","rlang"];let prefs={};
+try{prefs=JSON.parse(localStorage.getItem("jarvis-prefs")||"{}")}catch(e){}
+PK.forEach(k=>{if(prefs[k]!=null&&$(k))$(k).value=prefs[k];$(k).addEventListener("change",()=>{prefs[k]=$(k).value;try{localStorage.setItem("jarvis-prefs",JSON.stringify(prefs))}catch(e){}})});
+$("rate").addEventListener("input",()=>$("rate").dispatchEvent(new Event("change")));$("pitch").addEventListener("input",()=>$("pitch").dispatchEvent(new Event("change")));
+
+/* ---------- voices ---------- */
+const FEM=/female|zira|heera|hazel|susan|samantha|aria|jenny|swara|shruti|neerja|kalpana|veena|priya|karen|moira|tessa|fiona|victoria|ava|emma|sonia|libby|natasha|clara|kajal|lekha|google (हिन्दी|hindi)/i;
+const MAL=/male|david|mark|george|ravi|hemant|madhur|prabhat|mohan|guy|ryan|christopher|daniel|alex|fred|james|thomas|rishi|eric|brian|liam|william|rocko/i;
+const vl=(v,k)=>v.lang.toLowerCase().replace("_","-").startsWith(k);
+function fillVoices(){const vs=speechSynthesis.getVoices();
+  ["en","hi","te"].forEach(k=>{const s=$("v-"+k),cur=s.value||prefs["v-"+k]||"",list=vs.filter(v=>vl(v,k));
+    s.innerHTML=`<option value="">${list.length?"Auto":"Auto (none installed)"}</option>`+list.map(v=>`<option value="${esc(v.voiceURI)}">${esc(v.name.replace(/^(Microsoft|Google) /,""))}</option>`).join("");
+    s.value=cur;if(s.value!==cur)s.value=""})}
+function pickVoice(l){
+  const k=l.slice(0,2),vs=speechSynthesis.getVoices().filter(v=>vl(v,k)),sel=$("v-"+k).value,g=$("gender").value;
+  if(sel){const v=vs.find(x=>x.voiceURI===sel);if(v)return{v,adj:1}}
+  if(g!=="auto"){const m=vs.find(v=>g==="female"?FEM.test(v.name):MAL.test(v.name)&&!FEM.test(v.name));if(m)return{v:m,adj:1}}
+  const v=vs.find(x=>x.lang.replace("_","-")===l)||vs[0]||null;
+  return{v,adj:g==="male"?.78:g==="female"?1.22:1}
+}
+let cancelSp=false;
+function speak(parts){
+  if(!voiceOn||!parts.length)return Promise.resolve();
+  speechSynthesis.cancel();speaking=true;cancelSp=false;state("speak","Speaking… (tap the core to stop)");
+  return new Promise(res=>{let i=0;const next=()=>{
+    if(cancelSp||i>=parts.length){speaking=false;res();return}
+    const [t,l]=parts[i++],u=new SpeechSynthesisUtterance(t),p=pickVoice(l);u.lang=l;if(p.v)u.voice=p.v;
+    u.rate=+$("rate").value;u.pitch=Math.max(.1,Math.min(2,+$("pitch").value*p.adj));u.onend=u.onerror=next;speechSynthesis.speak(u)};next()});
+}
+function chunks(t){t=t.replace(/```[\s\S]*?```/g," ").replace(/[#*_`>|]/g,"").replace(/\n+/g,". ");const o=[];let c="";
+  for(const s of t.split(/(?<=[.!?।])\s+/)){if((c+" "+s).length>170&&c){o.push(c);c=s}else c+=(c?" ":"")+s}if(c)o.push(c);return o}
+function md(s){const codes=[];s=esc(s).replace(/```[a-z]*\n?([\s\S]*?)```/g,(m,c)=>"\u0001"+(codes.push(c)-1)+"\u0001");
+  let o="",ul=false,p=[];const fl=()=>{if(p.length){o+="<p>"+p.join("<br>")+"</p>";p=[]}},cu=()=>{if(ul){o+="</ul>";ul=false}};
+  for(const l of s.split("\n")){let m;
+    if(m=l.match(/^#{1,4}\s+(.*)/)){fl();cu();o+="<h4>"+m[1]+"</h4>"}
+    else if(m=l.match(/^\s*(?:[-*•]|\d+\.)\s+(.*)/)){fl();if(!ul){o+="<ul>";ul=true}o+="<li>"+m[1]+"</li>"}
+    else if(!l.trim()){fl();cu()}else{cu();p.push(l)}}
+  fl();cu();return o.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\u0001(\d+)\u0001/g,(m,i)=>"<pre>"+codes[i]+"</pre>")}
+async function api(p,b,m){const r=await fetch(p,{method:m||"POST",headers:{"Content-Type":"application/json","X-Jarvis":"1"},body:b?JSON.stringify(b):undefined});return r.json()}
+speechSynthesis.onvoiceschanged=fillVoices;fillVoices();
+const SAMPLE={en:["At your service, Sir.","en-IN"],hi:["मैं आपकी सेवा में हूँ, सर।","hi-IN"],te:["నేను మీ సేవలో ఉన్నాను, సర్.","te-IN"]};
+$("testv").onclick=()=>{const s=$("slang").value;speak((s==="all"?["en","hi","te"]:[s]).map(k=>SAMPLE[k])).then(()=>{speaking=false;state(want?"listen":"",want?"Listening for “Jarvis”…":"Idle");want&&begin()})};
+
+/* ---------- microphone level ---------- */
+async function startMeter(){
+  if(ms)return true;
+  try{ms=await navigator.mediaDevices.getUserMedia({audio:true});ac=new AudioContext();an=ac.createAnalyser();an.fftSize=512;fd=new Uint8Array(an.frequencyBinCount);td=new Uint8Array(an.fftSize);
+    ac.createMediaStreamSource(ms).connect(an);
+    (function loop(){if(!an)return;an.getByteFrequencyData(fd);let s=0;for(let i=0;i<64;i++)s+=fd[i];$("lvl").style.transform=`scaleX(${Math.min(1,s/64/60)})`;raf=requestAnimationFrame(loop)})();return true}
+  catch(e){return false}
+}
+function stopMeter(){an=null;cancelAnimationFrame(raf);ms&&ms.getTracks().forEach(t=>t.stop());try{ac&&ac.close()}catch(e){}ms=ac=null;fd.fill(0);$("lvl").style.transform="scaleX(0)"}
+
+/* ---------- core animation: smooth voice-wave orb ---------- */
+const cv=$("cv"),cx=cv.getContext("2d");let CW=0,col={a:"#ff7a00",b:"#ffb347"};
+function colors(){const s=getComputedStyle(document.documentElement);col={a:s.getPropertyValue("--ac").trim(),b:s.getPropertyValue("--ac2").trim()}}
+new ResizeObserver(()=>{const d=devicePixelRatio||1;cv.width=cv.height=Math.round(cv.clientWidth*d);CW=cv.width}).observe(cv);
+const W=91,wave=new Float32Array(W),rip=[];let lastRip=0,lv=0;
+function frame(t){
+  requestAnimationFrame(frame);if(!CW)return;
+  const mode=document.body.dataset.m||"idle",c=CW/2,R=c;
+  let raw=0;if(an){an.getByteTimeDomainData(td);let s=0;for(let i=0;i<td.length;i++){const v=(td[i]-128)/128;s+=v*v}raw=Math.sqrt(s/td.length)}
+  const tg=mode==="listen"?Math.min(1,raw*5):mode==="speak"?.5+.3*Math.sin(t/110)*Math.sin(t/370):mode==="think"?.12:.04;
+  lv+=(tg-lv)*.18;
+  for(let j=0;j<W;j++){const w=mode==="listen"&&an?(td[Math.floor(j/W*td.length)]-128)/128*2.2:mode==="speak"?Math.sin(t/150+j*.31)*Math.sin(t/410+j*.11):0;wave[j]+=(w-wave[j])*.3}
+  cx.clearRect(0,0,CW,CW);cx.globalAlpha=1;cx.lineCap="round";cx.lineJoin="round";
+  let g=cx.createRadialGradient(c,c,0,c,c,R*.62);g.addColorStop(0,col.a+"66");g.addColorStop(1,col.a+"00");cx.fillStyle=g;cx.beginPath();cx.arc(c,c,R*.62,0,7);cx.fill();
+  cx.save();cx.translate(c,c);cx.rotate(t/30000);cx.globalAlpha=.5;cx.lineWidth=R*.006;cx.strokeStyle=col.a;
+  for(let i=0;i<120;i++){const a=i/120*6.2832,l=i%5?.02:.045,ca=Math.cos(a),sa=Math.sin(a);cx.beginPath();cx.moveTo(ca*R*.97,sa*R*.97);cx.lineTo(ca*R*(.97-l),sa*R*(.97-l));cx.stroke()}cx.restore();
+  cx.globalAlpha=.25;cx.lineWidth=R*.004;cx.setLineDash([R*.02,R*.03]);cx.beginPath();cx.arc(c,c,R*.82,0,7);cx.stroke();cx.setLineDash([]);
+  if(mode==="think"){[[.7,1],[.6,-1.7]].forEach(([r,k],j)=>{cx.save();cx.translate(c,c);cx.rotate(t/700*k);cx.globalAlpha=.9;cx.lineWidth=R*.02;cx.strokeStyle=j?col.b:col.a;
+    for(let i=0;i<3;i++){const a=i*2.0944;cx.beginPath();cx.arc(0,0,R*r,a,a+1.1);cx.stroke()}cx.restore()})}
+  cx.shadowColor=col.a;
+  [[1,.5,.95,.9,col.b],[.75,1.4,.6,.6,col.a],[.5,2.3,.4,.45,col.a]].forEach(([amp,ph,al,lw,cl],L)=>{
+    cx.beginPath();const M=200;
+    for(let i=0;i<=M;i++){const a=i/M*6.2832,j=Math.round((i<M/2?i:M-i)*(W-1)/(M/2)),k=L*3;
+      const w=(wave[Math.max(0,j-k)]+wave[j]+wave[Math.min(W-1,j+k)])/3;
+      const r=R*(.38+.012*Math.sin(t/700+L)+lv*.07*Math.sin(a*3+t/380*(1+L*.3)+ph)+lv*.05*Math.sin(a*5-t/290+ph*2)+w*.16*amp*(.25+lv));
+      const x=c+Math.cos(a-1.5708)*r,y=c+Math.sin(a-1.5708)*r;i?cx.lineTo(x,y):cx.moveTo(x,y)}
+    cx.closePath();cx.globalAlpha=al;cx.lineWidth=R*lw/100*3.4;cx.strokeStyle=cl;cx.shadowBlur=R*.06;cx.stroke();
+    if(!L){cx.globalAlpha=.14;cx.fillStyle=col.a;cx.fill()}});
+  cx.shadowBlur=0;
+  if(((mode==="listen"&&lv>.35)||mode==="speak")&&t-lastRip>(mode==="speak"?420:650)){rip.push(t);lastRip=t}
+  for(let i=rip.length-1;i>=0;i--){const k=(t-rip[i])/1800;if(k>1){rip.splice(i,1);continue}cx.globalAlpha=(1-k)*.6;cx.lineWidth=R*.01;cx.strokeStyle=col.b;cx.beginPath();cx.arc(c,c,R*(.3+.66*k),0,7);cx.stroke()}
+  cx.globalAlpha=1;const cr=R*(.12+.05*lv+.01*Math.sin(t/500));
+  g=cx.createRadialGradient(c,c,0,c,c,cr*1.8);g.addColorStop(0,"#ffffff");g.addColorStop(.35,col.b);g.addColorStop(.7,col.a);g.addColorStop(1,col.a+"00");
+  cx.fillStyle=g;cx.beginPath();cx.arc(c,c,cr*1.8,0,7);cx.fill();
+}
+requestAnimationFrame(frame);
+
+/* ---------- listening ---------- */
+function begin(){if(!SR||!want||running||busy||speaking)return;rec.lang=$("rlang").value;try{rec.start()}catch(e){}}
+function halt(){try{rec&&rec.abort()}catch(e){}}
+function arm(){armed=true;clearTimeout(armTimer);armTimer=setTimeout(()=>{armed=false;if(running)state("listen","Listening for “Jarvis”…")},12000)}
+
+let pendingActions=null;
+const YES=/\b(yes|yeah|yep|proceed|go ahead|do it|confirm|ok|okay|sure|haan|han|avunu)\b|हाँ|हां|ठीक|అవును|సరే|చేయి/i;
+const NO=/\b(no|nope|cancel|stop|don't|nahi|vaddu)\b|नहीं|मत|వద్దు|కాదు|ఆపు/i;
+function chips(arr){return arr.map(x=>`<span class="${/^(Failed|WhatsApp: no|I don't|Install|Unknown|PC control|Typing|Cannot)/.test(x)?"bad":""}">${esc(x)}</span>`).join("")}
+async function runPending(ok){
+  const acts=pendingActions;pendingActions=null;document.querySelectorAll(".pend").forEach(e=>e.remove());if(!acts)return;
+  if(!ok){add("ai","Cancelled, Sir. Nothing was done.");return}
+  state("think","Working…");const r=await api("/api/run",{actions:acts});add("ai",`<div class="acts">${chips(r.results||[])}</div>`);$("capacts").innerHTML=chips(r.results||[]);state(want?"listen":"",want?"Listening…":"Idle");
+}
+function answerPending(t){if(!pendingActions)return false;if(NO.test(t)){runPending(false);return true}if(YES.test(t)){runPending(true);return true}return false}
+async function ask(text){
+  if(busy)return;busy=true;halt();armed=false;add("me",esc(text));state("think","Thinking…");$("cap").textContent="";$("capacts").innerHTML="";
+  try{
+    const d=await api("/api/ask",{text,history,control,confirm:$("conf").classList.contains("on")});
+    if(d.error){add("ai err",esc(d.error));$("cap").textContent=d.error}
+    else{
+      const acts=chips(d.results||[]);
+      const short=`<div class="row"><span class="tag">EN</span><span>${esc(d.en)}</span></div><div class="row"><span class="tag">हि</span><span>${esc(d.hi)}</span></div><div class="row"><span class="tag">తె</span><span>${esc(d.te)}</span></div>`;
+      let h=d.detail?`<div class="md">${md(d.detail)}</div><details class="why"><summary>Short answer in 3 languages</summary>${short}</details>`:short;
+      if(d.thinking)h+=`<details class="why"><summary>How I thought about it</summary><div>${esc(d.thinking)}</div></details>`;
+      if(acts)h+=`<div class="acts">${acts}</div>`;
+      if(d.app)h+=`<div class="appcard">🛠 <b>${esc(d.app.name)}</b> <small>(${d.app.kind})</small><br><small>${esc(d.app.path)}</small><div class="acts"><button class="b" data-a="prev">Preview</button><button class="b" data-a="folder">Open folder</button></div></div>`;
+      if(d.pending&&d.pending.length){pendingActions=d.pending.map(p=>p.action);h+=`<div class="pend">Needs your approval, Sir:<br><b>${d.pending.map(p=>esc(p.label)).join("<br>")}</b><div class="acts"><button class="b on" data-a="yes">Approve</button><button class="b" data-a="no">Cancel</button></div></div>`}
+      const el=add("ai",h);
+      el.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{const a=b.dataset.a;if(a==="yes")runPending(true);else if(a==="no")runPending(false);else if(a==="prev")showApp(d.app);else api("/api/open",{slug:d.app.slug,what:"folder"})});
+      if(d.app&&d.app.kind==="html"&&!control)showApp(d.app);
+      $("cap").textContent=d.en;$("capacts").innerHTML=acts;
+      history.push({role:"user",content:text},{role:"assistant",content:d.en});history=history.slice(-12);renderMem(d.memory);
+      const s=$("slang").value,L={en:["en-IN",d.en],hi:["hi-IN",d.hi],te:["te-IN",d.te]};
+      let parts;
+      if($("readmode").value==="full"&&d.detail){const l={en:"en-IN",hi:"hi-IN",te:"te-IN"}[d.lang]||"en-IN";parts=chunks(d.detail).map(c=>[c,l])}
+      else parts=(s==="all"?["en","hi","te"]:[s]).map(k=>[L[k][1],L[k][0]]);
+      if(pendingActions)parts.push(["Shall I proceed, Sir? Say yes or no.","en-IN"]);
+      await speak(parts);
+    }
+  }catch(e){add("ai err","Cannot reach the Jarvis server. Is app.py still running in the terminal?")}
+  busy=false;speaking=false;if(want){arm();begin()}else state("","Idle");
+}
+function handle(alts){
+  if(busy||speaking)return;
+  if(pendingActions&&answerPending(alts.join(" ")))return;
+  const text=alts.find(a=>WAKE.test(a))||alts[0];$("heard").textContent="Heard: "+text;
+  const m=text.match(WAKE);
+  if(m){const cmd=text.slice(m.index+m[0].length).replace(/^[\s,.:!?-]+/,"");
+    if(cmd)ask(cmd);
+    else{arm();halt();state("listen","Yes, Sir?");speak([["Yes, Sir?","en-IN"]]).then(()=>{speaking=false;state("listen","Listening… speak your command");begin()})}
+  }else if(armed){ask(text)}
+}
+/* ---------- workshop (generated apps) ---------- */
+let cur=null;
+function wtab(t){$("bframe").hidden=!(t==="prev"&&cur&&cur.kind==="html");$("bcode").hidden=t!=="code";$("blist").hidden=t!=="list"}
+function showApp(a){cur=a;$("bench").hidden=false;$("bname").textContent=a.name||a.slug;$("bkind").textContent=a.kind;
+  $("bframe").src=a.kind==="html"?`/apps/${a.slug}/index.html`:"about:blank";
+  if(a.code!=null)$("bcode").textContent=a.code;else fetch(`/apps/${a.slug}/${a.file}`).then(r=>r.text()).then(t=>{a.code=t;$("bcode").textContent=t});
+  wtab(a.kind==="html"?"prev":"code")}
+async function listApps(){
+  $("bench").hidden=false;$("bname").textContent="Workshop — built apps";$("bkind").textContent="";cur=null;wtab("list");
+  const l=await (await fetch("/api/apps")).json();
+  $("blist").innerHTML=l.length?"":"<p style='color:var(--mu)'>No apps yet. Say “Jarvis, build me a to-do app”.</p>";
+  l.forEach(a=>{const b=document.createElement("button");b.className="b";b.textContent=`${a.kind==="html"?"🌐":"🐍"} ${a.slug}`;b.onclick=()=>showApp({...a,name:a.slug});$("blist").append(b)})}
+$("wbtn").onclick=listApps;$("bclose").onclick=()=>{$("bench").hidden=true;$("bframe").src="about:blank"};
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>cur&&wtab(b.dataset.tab));
+$("bopen").onclick=()=>cur&&api("/api/open",{slug:cur.slug,what:"app"});$("bfold").onclick=()=>cur&&api("/api/open",{slug:cur.slug,what:"folder"});
+$("bcopy").onclick=()=>cur&&cur.code&&navigator.clipboard.writeText(cur.code);
+$("conf").onclick=()=>$("conf").classList.toggle("on");$("cwide").onclick=()=>document.body.classList.toggle("cwide");
+
+function setup(){
+  rec=new SR();rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=3;
+  rec.onstart=()=>{running=true;state("listen",armed?"Listening… speak your command":"Listening for “Jarvis”…")};
+  rec.onend=()=>{running=false;if(want&&!busy&&!speaking)setTimeout(begin,300)};
+  rec.onerror=e=>{
+    if(e.error==="not-allowed"||e.error==="service-not-allowed"){want=false;stopMeter();state("","Microphone blocked. Click the lock icon by the address bar, allow Microphone, then tap the core.")}
+    else if(e.error==="audio-capture"){want=false;stopMeter();state("","No microphone found. Check Windows Settings → Privacy → Microphone.")}
+    else if(e.error==="network"){$("heard").textContent="Speech service unreachable — needs internet. Chrome works best."}
+  };
+  rec.onresult=e=>{let it="";
+    for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];
+      if(r.isFinal){const a=[...r].map(x=>x.transcript.trim()).filter(Boolean);if(a.length)handle(a)}else it+=r[0].transcript+" "}
+    if(it)$("heard").textContent="Hearing: "+it.trim()};
+}
+async function startListening(){
+  if(!SR){state("","Voice input needs Google Chrome (or Edge). Typing still works.");return false}
+  speechSynthesis.getVoices();
+  if(!await startMeter()){state("","Cannot access the microphone. Allow it in the address bar and check Windows Settings → Privacy → Microphone.");return false}
+  want=true;return true;
+}
+$("orb").onclick=async()=>{
+  if(speaking){cancelSp=true;speechSynthesis.cancel();return}
+  if(want){want=false;halt();stopMeter();armed=false;state("","Idle");$("heard").textContent="";return}
+  if(await startListening())begin();
+};
+$("talk").onclick=async()=>{if(await startListening()){arm();if(running)state("listen","Listening… speak your command");else begin()}};
+$("rlang").onchange=()=>{if(want)halt()};
+$("mute").onclick=()=>{voiceOn=!voiceOn;$("mute").textContent="Voice: "+(voiceOn?"on":"off");$("mute").classList.toggle("on",voiceOn);if(!voiceOn)speechSynthesis.cancel()};
+$("ctl").onclick=()=>{control=!control;$("ctl").textContent="PC control: "+(control?"on":"off");$("ctl").classList.toggle("on",control)};
+$("f").onsubmit=e=>{e.preventDefault();const t=$("q").value.trim();if(t){$("q").value="";if(answerPending(t))return;ask(t.replace(/^\s*jarvis[\s,.:!-]*/i,"")||t)}};
+["Build me a pomodoro timer app","Explain how black holes form","Should I learn Python or Java?","Take a screenshot","Open a new tab","Message Mom on WhatsApp: I'll be late","YouTube ని తెరువు","वॉल्यूम बढ़ाओ"].forEach(t=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>ask(t);$("chips").append(b)});
+function renderMem(m){$("mc").textContent=m.length?`(${m.length})`:"";$("ml").innerHTML=m.length?m.map(x=>`<li>${esc(x)}</li>`).join(""):"<li style='color:var(--mu)'>Empty</li>"}
+$("wipe").onclick=async()=>{renderMem(await api("/api/memory",null,"DELETE"))};
+fetch("/api/memory").then(r=>r.json()).then(renderMem);
+function theme(t){document.documentElement.dataset.theme=t;document.querySelectorAll(".themes button").forEach(b=>b.classList.toggle("sel",b.dataset.t===t));colors();try{localStorage.setItem("jarvis-theme2",t)}catch(e){}}
+document.querySelectorAll(".themes button").forEach(b=>b.onclick=()=>theme(b.dataset.t));
+let st="ember";try{st=localStorage.getItem("jarvis-theme2")||"ember"}catch(e){}theme(st);
+if(SR)setup();
+</script></body></html>
